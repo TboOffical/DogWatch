@@ -5,17 +5,20 @@ import requests
 from datetime import date
 from datetime import datetime
 import cv2
+from playsound import playsound
 import jetson.utils
 from pushbullet import API
 import time as tm
 import os as os
+import gc
 import threading
-from jetson_utils import videoSource, videoOutput, logUsage
+from jetson_utils import videoSource, videoOutput, logUsage, videoOutput
 
 def app():
 
     load = False
     live = False
+    net = jetson.inference.detectNet("coco-dog")
 
     app = Flask(__name__)
 
@@ -34,12 +37,12 @@ def app():
                         _, frame = cap.read()
                         cv2.imwrite("isdog.jpg", frame)
                         img = jetson.utils.loadImage("isdog.jpg")
-                        net = jetson.inference.detectNet("coco-dog")
-                        detections = net.Detect(img)
+                        detections = net.Detect(img, overlay="box,labels,conf")
                         print("detected {:d} objects in image".format(len(detections)))
                         for detection in detections:
                             print(detection)
-                            cv2.imwrite("last.jpg", frame)
+                            output = videoOutput("last.jpg")
+                            output.Render(img)
                             f = open("push.dwl", "r")
                             push = f.read()
                             f.close()
@@ -56,8 +59,9 @@ def app():
                             file1.write('{"date" : "'+  now.strftime("%d/%m/%Y %H:%M") +'", "Message": "'+ 'Detected a Dog"}split\n')
                             file1.close()
                             tm.sleep(2)
-                      
+                              
                 cap.release()
+                gc.collect()
 
     class VideoCamera(object):
         def __init__(self):
@@ -76,6 +80,14 @@ def app():
     def index():
         return render_template("index.html")
         
+    @app.route('/clear')
+    def clear():
+        try:
+            os.unlink("./log.dwl")
+        except:
+            return "err"
+        return "ok"
+
     @app.route('/quit')
     def quit():
         exit()
@@ -84,6 +96,14 @@ def app():
     def getntf():
         f = open("push.dwl", "r")
         return f.read()
+
+    @app.route('/honk')
+    def honk():
+        try:
+            playsound("horn.wav")
+        except:
+            return "fail"
+        return "ok"
     
     @app.route('/get_log')
     def getlog():
