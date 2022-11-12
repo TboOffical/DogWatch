@@ -75,6 +75,7 @@
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <a class="btn btn-outline-primary" onclick="clearLog()">Delete Log</a>
         </div>
       </div>
     </div>
@@ -83,7 +84,7 @@
   <div class="container text-center">
     <div class="row">
       <div class="col"><br>
-        <img style="border: solid #0d6efd 3px; border-radius: 10px;" id="previewf" src="video_feed" class="img-fluid" alt="...">
+        <img style="border: solid #0d6efd 3px; border-radius: 10px;" id="previewf" src="https://i.imgur.com/I7xDXpm.png" class="img-fluid" alt="...">
 
       </div>
       <div class="col">
@@ -100,12 +101,10 @@
         <br>
         <div class="card" style="width: 40rem;">
           <ul class="list-group list-group-flush ">
-            <li class="list-group-item"><button type="button" class="btn btn-outline-primary"> Honk Horn <i
+            <li class="list-group-item"><button onclick="honk()" type="button" class="btn btn-outline-primary"> Honk Horn <i
                   class="bi bi-play-circle-fill"></i></button></li>
             <li class="list-group-item"><button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal2"> View Activity Log <i
                   class="bi bi-list"></i></button></li>
-            <li class="list-group-item"><button type="button" class="btn btn-outline-primary"> Play Cat Sound <i
-                  class="bi bi-github"></i></button></li>
             <li class="list-group-item">
               <div class="btn-group">
                 <a href="#" onclick="stop()" class="btn btn-outline-primary">Stop Live View <i
@@ -121,6 +120,7 @@
   </div>
 
   <script>
+    document.getElementById("previewf").src = "/video_feed"
     let running = true
 
     function start() {
@@ -129,6 +129,11 @@
 
     function stop() {
       document.getElementById("previewf").src = "https://i.imgur.com/CaIB2oi.png"
+    }
+
+    function honk()
+    {
+      httpGet("/honk")
     }
 
     setInterval(function () {
@@ -156,6 +161,11 @@
         document.getElementById("isdog").innerHTML = "No"
       }
       document.getElementById("det").innerHTML = respoonce
+    }
+
+    function clearLog()
+    {
+      httpGet("/clear")
     }
 
     function ntf()
