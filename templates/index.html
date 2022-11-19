@@ -24,14 +24,16 @@
             <a class="nav-link active" aria-current="page" href="#"> <i class="bi bi-house-door"></i> Home</a>
           </li>
           <li class="nav-item active">
-            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal"> <i class="bi bi-gear"></i> Settings</a>
+            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#exampleModal"> <i
+                class="bi bi-gear"></i> Settings</a>
           </li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <div class="modal modal-lg fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal modal-lg fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -39,15 +41,20 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
+          <h3>AI Proformance</h3>
+          <p>For live gauge, turn live video off</p>
+          <canvas id="gauge"></canvas><br><br>
           <div class="form-check">
             <input class="form-check-input" type="checkbox" onchange="ntf()" value="" id="flexCheckDefault">
             <label class="form-check-label" for="flexCheckDefault">
               Push Notifications Via Pushbullet
             </label>
-          </div><br>
+          </div>
           <div class="mb-3">
-            <label for="exampleInputEmail1" class="form-label">The pushbullet API key Can be generated in account page.</label>
-            <input placeholder="API Key" id="key" oninput="setkey()" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+            <label for="exampleInputEmail1" class="form-label">The pushbullet API key Can be generated in account
+              page.</label>
+            <input placeholder="API Key" id="key" oninput="setkey()" class="form-control" id="exampleInputEmail1"
+              aria-describedby="emailHelp">
           </div>
         </div>
         <div class="modal-footer">
@@ -57,7 +64,8 @@
     </div>
   </div>
 
-  <div class="modal modal-lg fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal modal-lg fade" id="exampleModal2" tabindex="-1" aria-labelledby="exampleModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
@@ -66,8 +74,8 @@
         </div>
         <div class="modal-body">
           <center>
-                      Last Detection : <br>
-                      <img src="/lastpic" style="border-radius: 10px; width: 40%;"><br> 
+            Last Detection : <br>
+            <img src="/lastpic" style="border-radius: 10px; width: 40%;"><br>
           </center>
         </div><br>
         <div id="log">
@@ -84,7 +92,8 @@
   <div class="container text-center">
     <div class="row">
       <div class="col"><br>
-        <img style="border: solid #0d6efd 3px; border-radius: 10px;" id="previewf" src="https://i.imgur.com/I7xDXpm.png" class="img-fluid" alt="...">
+        <img style="border: solid #0d6efd 3px; border-radius: 10px;" id="previewf" src="https://i.imgur.com/I7xDXpm.png"
+          class="img-fluid" alt="...">
 
       </div>
       <div class="col">
@@ -101,10 +110,10 @@
         <br>
         <div class="card" style="width: 40rem;">
           <ul class="list-group list-group-flush ">
-            <li class="list-group-item"><button onclick="honk()" type="button" class="btn btn-outline-primary"> Honk Horn <i
-                  class="bi bi-play-circle-fill"></i></button></li>
-            <li class="list-group-item"><button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#exampleModal2"> View Activity Log <i
-                  class="bi bi-list"></i></button></li>
+            <li class="list-group-item"><button onclick="honk()" type="button" class="btn btn-outline-primary"> Honk
+                Horn <i class="bi bi-play-circle-fill"></i></button></li>
+            <li class="list-group-item"><button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                data-bs-target="#exampleModal2"> View Activity Log <i class="bi bi-list"></i></button></li>
             <li class="list-group-item">
               <div class="btn-group">
                 <a href="#" onclick="stop()" class="btn btn-outline-primary">Stop Live View <i
@@ -118,8 +127,59 @@
       </div>
     </div>
   </div>
-
+  <script src="https://cdn.rawgit.com/Mikhus/canvas-gauges/gh-pages/download/2.1.7/all/gauge.min.js"></script>
   <script>
+    var gauge = new RadialGauge({
+      renderTo: 'gauge',
+      width: 300,
+      height: 300,
+      units: "Slowness (Lower is better)",
+      minValue: 0,
+      startAngle: 90,
+      ticksAngle: 180,
+      valueBox: false,
+      maxValue: 1,
+      majorTicks: [
+        "0",
+        "0.1",
+        "0.2",
+        "0.3",
+        "0.4",
+        "0.5",
+        "0.6",
+        "0.7",
+        "0.8",
+        "0.9",
+        "1",
+      ],
+      minorTicks: 2,
+      strokeTicks: true,
+      highlights: [
+        {
+          "from": 0.7,
+          "to": 1,
+          "color": "rgba(200, 50, 50, .75)"
+        }
+      ],
+      colorPlate: "#fff",
+      borderShadowWidth: 0,
+      borders: false,
+      needleType: "arrow",
+      needleWidth: 2,
+      needleCircleSize: 7,
+      needleCircleOuter: true,
+      needleCircleInner: false,
+      animation: true,
+      animationDuration: 100,
+      animationRule: "linear",
+    }).draw();
+
+    setInterval(function () {
+      gauge.update({
+        value: httpGet("/get_stat")
+      })
+    }, 500)
+
     document.getElementById("previewf").src = "/video_feed"
     let running = true
 
@@ -131,8 +191,7 @@
       document.getElementById("previewf").src = "https://i.imgur.com/CaIB2oi.png"
     }
 
-    function honk()
-    {
+    function honk() {
       httpGet("/honk")
     }
 
@@ -144,7 +203,7 @@
       document.getElementById("date").innerHTML = dateTime
     }, 1000)
 
-    
+
 
     function httpGet(theUrl) {
       var xmlHttp = new XMLHttpRequest();
@@ -155,50 +214,46 @@
 
     function isDog() {
       let respoonce = httpGet("/isdog")
-      if (respoonce.includes("dog")){
+      if (respoonce.includes("dog")) {
         document.getElementById("isdog").innerHTML = "Yes"
-      }else{
+      } else {
         document.getElementById("isdog").innerHTML = "No"
       }
       document.getElementById("det").innerHTML = respoonce
     }
 
-    function clearLog()
-    {
+    function clearLog() {
       httpGet("/clear")
     }
 
-    function ntf()
-    {
-      if (document.getElementById("flexCheckDefault").checked == true)
-      {
+    function ntf() {
+      if (document.getElementById("flexCheckDefault").checked == true) {
         httpGet("/set_ntf_true")
-      }else{
+      } else {
         httpGet("/set_ntf_false")
       }
     }
 
     document.getElementById("flexCheckDefault").checked = true
     let shoudcheck = httpGet("/get_ntf")
-    if (shoudcheck == "true")
-    {
+    if (shoudcheck == "true") {
       document.getElementById("flexCheckDefault").checked = true
-    }else{
+    } else {
       document.getElementById("flexCheckDefault").checked = false
     }
 
     ///set_key?key=sdfsdfsdfsdf
 
-    function setkey(){
+    function setkey() {
       httpGet("/set_key?key=" + document.getElementById("key").value)
     }
 
 
     let log = httpGet("/get_log").split("split")
-    for(entry in log){
+    for (entry in log) {
       let json = JSON.parse(log[entry])
-      document.getElementById("log").innerHTML +=  
-      `
+      document.getElementById("log").innerHTML +=
+        `
       <div class="alert alert-primary d-flex align-items-center" role="alert">
       <div>
         <strong>${json["date"]}</strong> : ${json["Message"]}

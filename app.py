@@ -37,7 +37,12 @@ def app():
                         _, frame = cap.read()
                         cv2.imwrite("isdog.jpg", frame)
                         img = jetson.utils.loadImage("isdog.jpg")
+                        start = tm.perf_counter()
                         detections = net.Detect(img, overlay="box,labels,conf")
+                        end = tm.perf_counter()
+                        file2 = open("stats.dwl", "w") 
+                        file2.write(str(end - start))
+                        file2.close()
                         print("detected {:d} objects in image".format(len(detections)))
                         for detection in detections:
                             print(detection)
@@ -97,6 +102,11 @@ def app():
         f = open("push.dwl", "r")
         return f.read()
 
+    @app.route('/get_stat')
+    def get_stat():
+        f = open("stats.dwl", "r")
+        return f.read()
+
     @app.route('/honk')
     def honk():
         try:
@@ -107,8 +117,11 @@ def app():
     
     @app.route('/get_log')
     def getlog():
-        f = open("log.dwl", "r")
-        return f.read()
+        try:
+            f = open("log.dwl", "r")
+            return f.read()
+        except:
+            return '{"date": "Server-Message", "Message": "No Log Data" }'
 
     @app.route('/lastpic')
     def lst():
@@ -145,6 +158,7 @@ def app():
     def video_feed():
         return Response(gen(VideoCamera()),
                         mimetype='multipart/x-mixed-replace; boundary=frame')
+
    
     ait = ai(1, "ai-Thread", 1)
     ait.start()
