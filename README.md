@@ -22,5 +22,6 @@ git clone https://github.com/TboOffical/DogWatch.git .
 ```bash
 sudo python3 app.py
 ```
+- You can find you app in a web browser at http://ip.of.jet.son:5000
 
 
